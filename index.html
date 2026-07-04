@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iZeroPDF - Premium Offline PDF Toolkit</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192x192.png">
+    <meta name="theme-color" content="#1a73e8">
+    <meta name="description" content="iZeroPDF - Premium 100% Offline PDF & Image Toolkit. All processing in your browser">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/theme-light.css" id="themeStyles">
+    
+    <!-- Icon Libraries -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+    <!-- ============================================
+         CACHE CONSENT DIALOG
+    ============================================ -->
+    <div id="cacheConsentDialog" class="cache-consent-overlay">
+        <div class="cache-consent-modal">
+            <div class="cache-consent-header">
+                <span class="cache-consent-icon material-symbols-outlined">storage</span>
+                <h2>Enable Offline Cache?</h2>
+            </div>
+            
+            <div class="cache-consent-body">
+                <p>iZeroPDF uses your browser's cache to provide a better experience. Here is what we store:</p>
+                
+                <div class="cache-features">
+                    <div class="cache-feature">
+                        <span class="cache-feature-icon material-symbols-outlined">history</span>
+                        <div>
+                            <strong>Conversion History</strong>
+                            <span>Keep track of all files you have converted</span>
+                        </div>
+                    </div>
+                    <div class="cache-feature">
+                        <span class="cache-feature-icon material-symbols-outlined">bolt</span>
+                        <div>
+                            <strong>Faster Loading</strong>
+                            <span>Tool assets load instantly on repeat visits</span>
+                        </div>
+                    </div>
+                    <div class="cache-feature">
+                        <span class="cache-feature-icon material-symbols-outlined">trending_up</span>
+                        <div>
+                            <strong>Usage Statistics</strong>
+                            <span>Track your total conversions and visits</span>
+                        </div>
+                    </div>
+                    <div class="cache-feature">
+                        <span class="cache-feature-icon material-symbols-outlined">lock</span>
+                        <div>
+                            <strong>100% Private</strong>
+                            <span>All data stays on your device. Nothing is uploaded.</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cache-privacy-note">
+                    <span class="material-symbols-outlined">shield</span>
+                    <div>
+                        <strong>Privacy First:</strong>
+                        We never upload or store your files on any server. 
+                        All data is stored locally in your browser's cache.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cache-consent-footer">
+                <button class="btn btn-secondary" id="declineCacheBtn">
+                    <span class="material-symbols-outlined">close</span> Decline
+                </button>
+                <button class="btn btn-primary" id="acceptCacheBtn">
+                    <span class="material-symbols-outlined">check</span> Accept & Continue
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         NAVIGATION
+    ============================================ -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" data-tool="home" class="nav-brand">
+                <span class="brand-icon">iZ</span>
+                <span class="brand-text">iZeroPDF</span>
+                <span class="offline-badge">
+                    <span class="dot"></span>
+                    Offline
+                </span>
+            </a>
+            
+            <div class="nav-controls">
+                <div class="nav-clock">
+                    <span class="material-symbols-outlined">schedule</span>
+                    <span id="clockDisplay">--:--:--</span>
+                </div>
+                
+                <div class="nav-stat">
+                    <span class="material-symbols-outlined">visibility</span>
+                    <span id="visitCount">0</span>
+                </div>
+                
+                <div class="nav-stat">
+                    <span class="material-symbols-outlined">description</span>
+                    <span id="fileCount">0</span>
+                </div>
+                
+                <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">
+                    <span class="material-symbols-outlined">dark_mode</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================================
+         MAIN CONTENT
+    ============================================ -->
+    <main id="appContainer" class="container">
+        <section id="page-home" class="page active">
+            <!-- Hero Section -->
+            <div class="hero">
+                <div class="hero-visual">
+                    <div class="hero-shape"></div>
+                    <div class="hero-pdf-icon">
+                        <span class="material-symbols-outlined">picture_as_pdf</span>
+                    </div>
+                </div>
+                
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <span class="badge-icon material-symbols-outlined">bolt</span>
+                        <span class="badge-text">100% Offline</span>
+                        <span class="badge-divider"></span>
+                        <span class="badge-text" style="font-weight:400;">No Uploads</span>
+                    </div>
+                    
+                    <h1>
+                        Your <span class="highlight">PDF</span> &<br>
+                        <span class="highlight">Image</span> Toolkit
+                    </h1>
+                    
+                    <p class="hero-subtitle">
+                        <span>100% private</span>
+                        <span class="separator">•</span>
+                        <span>No uploads</span>
+                        <span class="separator">•</span>
+                        <span>Works offline</span>
+                        <span class="separator">•</span>
+                        <span>Zero data leaves your device</span>
+                    </p>
+                    
+                    <div class="hero-actions">
+                        <button class="btn btn-primary btn-lg" onclick="document.querySelector('.section-header').scrollIntoView({behavior:'smooth'})">
+                            <span class="material-symbols-outlined">arrow_downward</span> Explore Tools
+                        </button>
+                        <button class="btn btn-outline btn-lg" onclick="Router.navigate('merge')">
+                            <span class="material-symbols-outlined">merge</span> Merge PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Popular Tools -->
+            <div class="section-header">
+                <h2>Popular Tools</h2>
+                <p>Most used tools by our community</p>
+            </div>
+            
+            <div class="tools-grid popular-grid">
+                <div class="tool-card popular featured" data-tool="merge">
+                    <span class="tool-badge">Popular</span>
+                    <span class="tool-icon material-symbols-outlined">merge</span>
+                    <h3>Merge PDF</h3>
+                    <p>Combine multiple PDFs</p>
+                </div>
+                <div class="tool-card popular featured" data-tool="compress">
+                    <span class="tool-badge">Popular</span>
+                    <span class="tool-icon material-symbols-outlined">compress</span>
+                    <h3>Compress</h3>
+                    <p>Reduce file sizes</p>
+                </div>
+                <div class="tool-card popular featured" data-tool="image-to-pdf">
+                    <span class="tool-badge">Popular</span>
+                    <span class="tool-icon material-symbols-outlined">image</span>
+                    <h3>Images → PDF</h3>
+                    <p>Convert images to PDF</p>
+                </div>
+                <div class="tool-card popular featured" data-tool="pdf-to-jpg">
+                    <span class="tool-badge">Popular</span>
+                    <span class="tool-icon material-symbols-outlined">photo</span>
+                    <h3>PDF → JPG</h3>
+                    <p>Convert PDF to images</p>
+                </div>
+            </div>
+            
+            <!-- All Tools -->
+            <div class="section-header">
+                <h2>All Tools</h2>
+                <p>Complete toolkit for all your PDF & Image needs</p>
+            </div>
+            
+            <div class="tools-grid">
+                <div class="tool-card category-core" data-tool="pdf-to-image">
+                    <span class="tool-icon material-symbols-outlined">picture_as_pdf</span>
+                    <h3>PDF → Images</h3>
+                    <p>Extract all pages as images</p>
+                </div>
+                <div class="tool-card category-core" data-tool="crop">
+                    <span class="tool-icon material-symbols-outlined">crop</span>
+                    <h3>Crop Image</h3>
+                    <p>Crop images interactively</p>
+                </div>
+                <div class="tool-card category-core" data-tool="resize">
+                    <span class="tool-icon material-symbols-outlined">aspect_ratio</span>
+                    <h3>Resize Image</h3>
+                    <p>Resize images precisely</p>
+                </div>
+                <div class="tool-card category-core" data-tool="photo-resizer">
+                    <span class="tool-icon material-symbols-outlined">photo_camera</span>
+                    <h3>Photo Resizer</h3>
+                    <p>ID, Social Media & more</p>
+                </div>
+                
+                <div class="tool-card category-pdf" data-tool="split">
+                    <span class="tool-icon material-symbols-outlined">call_split</span>
+                    <h3>Split PDF</h3>
+                    <p>Split PDF into parts</p>
+                </div>
+                <div class="tool-card category-pdf" data-tool="rotate">
+                    <span class="tool-icon material-symbols-outlined">rotate_right</span>
+                    <h3>Rotate PDF</h3>
+                    <p>Rotate PDF pages</p>
+                </div>
+                <div class="tool-card category-pdf" data-tool="extract">
+                    <span class="tool-icon material-symbols-outlined">extract</span>
+                    <h3>Extract Images</h3>
+                    <p>Extract images from PDF</p>
+                </div>
+                
+                <div class="tool-card category-security" data-tool="lock">
+                    <span class="tool-icon material-symbols-outlined">lock</span>
+                    <h3>Lock PDF</h3>
+                    <p>Password protect PDFs</p>
+                </div>
+                <div class="tool-card category-security" data-tool="remove-pages">
+                    <span class="tool-icon material-symbols-outlined">delete</span>
+                    <h3>Remove Pages</h3>
+                    <p>Delete pages from PDF</p>
+                </div>
+            </div>
+        </section>
+
+        <div id="toolContent"></div>
+        
+        <!-- Page Content Container for Footer Pages -->
+        <section id="page-content-container" class="page" style="display:none;">
+            <div id="pageContent"></div>
+        </section>
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- ============================================
+         FOOTER - WITH ALL PAGES
+    ============================================ -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="footer-brand-icon">iZ</span>
+                <span class="footer-brand-text">iZeroPDF</span>
+                <span class="footer-version">v2.0.0</span>
+            </div>
+            
+            <div class="footer-links">
+                <a href="#" class="footer-link" data-page="privacy">Privacy</a>
+                <span class="footer-divider">·</span>
+                <a href="#" class="footer-link" data-page="open-source">Open Source</a>
+                <span class="footer-divider">·</span>
+                <a href="#" class="footer-link" data-page="github">GitHub</a>
+                <span class="footer-divider">·</span>
+                <a href="#" class="footer-link" data-page="license">License</a>
+                <span class="footer-divider">·</span>
+                <a href="#" class="footer-link" data-page="support">Support</a>
+            </div>
+            
+            <p class="footer-copy">
+                All processing runs locally in your browser. No data is ever uploaded.
+            </p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Files -->
+    <script src="js/utils/validators.js"></script>
+    <script src="js/utils/fileHelpers.js"></script>
+    <script src="js/utils/canvasHelpers.js"></script>
+    <script src="js/utils/zipHelpers.js"></script>
+    <script src="js/utils/downloadHelpers.js"></script>
+    
+    <script src="js/core/pdfProcessor.js"></script>
+    <script src="js/core/imageProcessor.js"></script>
+    <script src="js/core/cropEngine.js"></script>
+    <script src="js/core/mergeEngine.js"></script>
+    <script src="js/core/splitEngine.js"></script>
+    <script src="js/core/compressEngine.js"></script>
+    
+    <script src="js/ui/pdfToImage.js"></script>
+    <script src="js/ui/imageToPdf.js"></script>
+    <script src="js/ui/cropTool.js"></script>
+    <script src="js/ui/resizeTool.js"></script>
+    <script src="js/ui/photoResizerTool.js"></script>
+    <script src="js/ui/mergeTool.js"></script>
+    <script src="js/ui/splitTool.js"></script>
+    <script src="js/ui/rotateTool.js"></script>
+    <script src="js/ui/extractTool.js"></script>
+    <script src="js/ui/compressTool.js"></script>
+    <script src="js/ui/lockTool.js"></script>
+    <script src="js/ui/removePagesTool.js"></script>
+    <script src="js/ui/pdfToJpgTool.js"></script>
+    
+    <script src="js/state.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
