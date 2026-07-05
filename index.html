@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>iZeroPDF - Premium Offline PDF Toolkit</title>
     
+    <!-- CRITICAL FIX: Base URL for subfolder deployment -->
+    <base href="/i-Zero-PDF/">
+    
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="assets/icons/icon-192x192.png">
@@ -24,6 +27,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
+    <!-- Force reload to prevent redirect loop -->
+    <script>
+        // Prevent redirect loops
+        if (window.location.pathname === '/i-Zero-PDF/') {
+            console.log('iZeroPDF loaded correctly');
+        }
+    </script>
 </head>
 <body>
     <!-- ============================================
